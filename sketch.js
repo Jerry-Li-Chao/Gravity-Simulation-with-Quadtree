@@ -7,7 +7,6 @@ let maxCapacity = 64;
 let showQuadTree = false; // New variable to control QuadTree visibility
 let toggleButton; // New variable for the toggle button
 let particleCount = 800; // Number of particles
-let isTouchDevice = false;
 
 function setup() {
   // 90% of browser window size
@@ -149,13 +148,12 @@ function isMouseOverButton() {
 }
 
 function mousePressed() {
-  if (!isTouchDevice && !isOverInteractiveElement()) {
-    handleInteraction(mouseX, mouseY);
+  if (!isOverInteractiveElement()) {
+    handleInteraction();
   }
 }
 
 function touchStarted() {
-  isTouchDevice = true;
   if (!isOverInteractiveElement()) {
     handleInteraction();
     // Prevent default touch behavior only if not over the button
@@ -165,7 +163,16 @@ function touchStarted() {
   return true;
 }
 
-function handleInteraction(x, y) {
+function handleInteraction() {
+  let x = mouseX;
+  let y = mouseY;
+
+  // Use the first touch point if available
+  if (touches && touches.length > 0) {
+    x = touches[0].x;
+    y = touches[0].y;
+  }
+
   for (let p of particles) {
     p.applyExplosionForce(x, y, explosionForce, explosionRadius);
   }
