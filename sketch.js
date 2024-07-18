@@ -12,14 +12,14 @@ function setup() {
   // 90% of browser window size
   createCanvas(windowWidth * 0.95, windowHeight * 0.95);
 
+  if (windowWidth < 600) {
+    particleCount = 600;
+  }
+
   for (let i = 0; i < particleCount; i++) {
     // check if using mobile device or computer browser
     if (windowWidth < 600) {
-      particles[i] = new Particle(
-        random(width),
-        random(height),
-        random(0.5, 3)
-      );
+      particles[i] = new Particle(random(width), random(height), random(1, 3));
     } else {
       particles[i] = new Particle(
         random(width),
@@ -33,7 +33,7 @@ function setup() {
   toggleButton = createButton("Toggle QuadTree");
   toggleButton.position(10, height - 40);
   toggleButton.mousePressed(toggleQuadTree);
-  toggleButton.touchStarted(toggleQuadTree); // Add touch event listener to the button
+  toggleButton.touchStarted(toggleQuadTreeTwice); // Add touch event listener to the button
 
   // Create multiple attractors
   // attractors.push(
@@ -210,4 +210,8 @@ function calculatePowerOf2Capacity(clusterFactor) {
 // New function to toggle QuadTree visibility
 function toggleQuadTree() {
   showQuadTree = !showQuadTree;
+}
+
+function toggleQuadTreeTwice() {
+  showQuadTree = showQuadTree;
 }
