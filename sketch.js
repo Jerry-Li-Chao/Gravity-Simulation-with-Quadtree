@@ -33,6 +33,7 @@ function setup() {
   toggleButton = createButton("Toggle QuadTree");
   toggleButton.position(10, height - 40);
   toggleButton.mousePressed(toggleQuadTree);
+  toggleButton.touchStarted(toggleQuadTree); // Add touch event listener to the button
 
   // Create multiple attractors
   // attractors.push(
@@ -147,29 +148,33 @@ function isMouseOverButton() {
 }
 
 function mousePressed() {
-  handleInteraction();
+  if (!isOverInteractiveElement()) {
+    handleInteraction();
+  }
 }
 
 function touchStarted() {
-  handleInteraction();
-  // Prevent default touch behavior
-  return false;
+  if (!isOverInteractiveElement()) {
+    handleInteraction();
+    // Prevent default touch behavior only if not over the button
+    return false;
+  }
+  // Allow default touch behavior (like button clicks) if over an interactive element
+  return true;
 }
 
 function handleInteraction() {
-  if (!isOverInteractiveElement()) {
-    let x = mouseX;
-    let y = mouseY;
+  let x = mouseX;
+  let y = mouseY;
 
-    // Use the first touch point if available
-    if (touches && touches.length > 0) {
-      x = touches[0].x;
-      y = touches[0].y;
-    }
+  // Use the first touch point if available
+  if (touches && touches.length > 0) {
+    x = touches[0].x;
+    y = touches[0].y;
+  }
 
-    for (let p of particles) {
-      p.applyExplosionForce(x, y, explosionForce, explosionRadius);
-    }
+  for (let p of particles) {
+    p.applyExplosionForce(x, y, explosionForce, explosionRadius);
   }
 }
 
