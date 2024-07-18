@@ -100,9 +100,9 @@ function draw() {
     qtree.show();
   }
 
-  // Optionally, visualize the explosion radius when mouse is pressed
-  if (mouseIsPressed) {
-    if (!isMouseOverButton()) {
+  // Optionally, visualize the explosion radius when mouse is pressed or touch is active
+  if (mouseIsPressed || (touches && touches.length > 0)) {
+    if (!isOverInteractiveElement()) {
       noFill();
       stroke(255, 0, 0);
       ellipse(mouseX, mouseY, explosionRadius * 2);
@@ -147,12 +147,48 @@ function isMouseOverButton() {
 }
 
 function mousePressed() {
-  let isOverButton = isMouseOverButton();
-  if (!isOverButton) {
+  handleInteraction();
+}
+
+function touchStarted() {
+  handleInteraction();
+  // Prevent default touch behavior
+  return false;
+}
+
+function handleInteraction() {
+  if (!isOverInteractiveElement()) {
+    let x = mouseX;
+    let y = mouseY;
+
+    // Use the first touch point if available
+    if (touches && touches.length > 0) {
+      x = touches[0].x;
+      y = touches[0].y;
+    }
+
     for (let p of particles) {
-      p.applyExplosionForce(mouseX, mouseY, explosionForce, explosionRadius);
+      p.applyExplosionForce(x, y, explosionForce, explosionRadius);
     }
   }
+}
+
+function isOverInteractiveElement() {
+  let x = mouseX;
+  let y = mouseY;
+
+  // Use the first touch point if available
+  if (touches && touches.length > 0) {
+    x = touches[0].x;
+    y = touches[0].y;
+  }
+
+  return (
+    x > toggleButton.x - 8 &&
+    x < toggleButton.x + toggleButton.width + 2 &&
+    y > toggleButton.y - 6 &&
+    y < toggleButton.y + toggleButton.height + 2
+  );
 }
 
 function calculatePowerOf2Capacity(clusterFactor) {
