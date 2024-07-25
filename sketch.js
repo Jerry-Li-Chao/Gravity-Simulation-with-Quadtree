@@ -8,18 +8,26 @@ let showQuadTree = false; // New variable to control QuadTree visibility
 let toggleButton; // New variable for the toggle button
 let particleCount = 800; // Number of particles
 
+// New slider variables
+let corSlider;
+let gSlider;
+
 function setup() {
   // 90% of browser window size
   createCanvas(windowWidth * 0.95, windowHeight * 0.95);
 
   if (windowWidth < 600) {
-    particleCount = 600;
+    particleCount = 800;
   }
 
   for (let i = 0; i < particleCount; i++) {
     // check if using mobile device or computer browser
     if (windowWidth < 600) {
-      particles[i] = new Particle(random(width), random(height), random(1, 3));
+      particles[i] = new Particle(
+        random(width),
+        random(height),
+        random(0.3, 3)
+      );
     } else {
       particles[i] = new Particle(
         random(width),
@@ -31,9 +39,18 @@ function setup() {
 
   // Create toggle button
   toggleButton = createButton("Toggle QuadTree");
-  toggleButton.position(10, height - 40);
+  toggleButton.position(10, height - 20);
   toggleButton.mousePressed(toggleQuadTree);
   toggleButton.touchStarted(toggleQuadTreeTwice); // Add touch event listener to the button
+
+  // Create sliders
+  corSlider = createSlider(0, 1, 0.89, 0.01);
+  corSlider.position(width - 200, 10);
+  corSlider.style("width", "180px");
+
+  gSlider = createSlider(0, 10, 4, 0.1);
+  gSlider.position(width - 200, 40);
+  gSlider.style("width", "180px");
 
   // Create multiple attractors
   // attractors.push(
@@ -63,6 +80,10 @@ function setup() {
 
 function draw() {
   background(0);
+
+  // Update global variables based on slider values
+  cor = corSlider.value();
+  G = gSlider.value();
 
   // Count highlighted particles
   let highlightedCount = Particle.countHighlighted(particles);
@@ -125,6 +146,14 @@ function draw() {
   );
 
   text(`Collision Checks/sec: ${maxCollisionCount}`, 10, 100);
+
+  // Display slider values
+  textAlign(RIGHT);
+  text(`Energy retained per collison: ${cor.toFixed(2)}`, width - 10, 30);
+  text(`Gravity: ${G.toFixed(1)}`, width - 10, 60);
+
+  textAlign(LEFT);
+
   // clear the collision count every second
   if (frameCount % 60 === 0) {
     maxCollisionCount = collisionCount;
